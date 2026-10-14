@@ -112,3 +112,49 @@ class Villano(Personaje):
             "ausencias",
             "hablador",
         )
+
+
+
+class Miembro(ABC):
+    _id = 0
+    id = 0
+
+    def __init__(self, nombre: str, apellidos: str):
+        if not nombre or not nombre.strip():
+            raise ValueError("El nombre no puede estar vacío.")
+        if not apellidos or not apellidos.strip():
+            raise ValueError("Los apellidos no pueden estar vacíos.")
+        self.nombre = nombre
+        self.apellidos = apellidos
+        self._id += 1
+        self.id = self._id
+
+
+    def get_nombre(self):
+        return self.nombre
+
+    def get_apellido(self):
+        return self.apellidos
+
+    def get_id(self):
+        return self.id
+
+
+
+
+class Jugador(Miembro):
+    def __init__(self, nombre, apellido, posicion:str):
+        super().__init__(nombre, apellido)
+        self.posicion = posicion
+
+    def get_pos(self):
+        return self.posicion
+
+
+class CuerpoTecnico(Miembro):
+    def __init__(self, nombre, apellido, rol:str):
+        super().__init__(nombre, apellido)
+        self.rol = rol
+
+    def get_rol(self):
+        return self.rol

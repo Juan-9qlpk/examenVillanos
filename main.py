@@ -1,10 +1,10 @@
 """Punto de entrada de la aplicación."""
 
 import logging
+from datetime import datetime
 from gestion import Gestion
 from menu import Menu
 import os
-
 
 
 def configurar_logging() -> None:
@@ -23,11 +23,11 @@ def configurar_logging() -> None:
         ]
     )
 
-
 def main() -> None:
     configurar_logging()
     logger = logging.getLogger(__name__)
     logger.info("Inicio de la aplicación.")
+
 
     while True:
         try:

@@ -2,7 +2,9 @@
 
 import logging
 from gestion import Gestion
-
+from models import Jugador, CuerpoTecnico
+from datetime import datetime
+import os
 logger = logging.getLogger(__name__)
 
 
@@ -99,9 +101,23 @@ class Menu:
         else:
             print("No existe un personaje con ese identificador.")
 
+    def _crear_miembro(self):
+            nombre = input("Nombre: ").strip()
+            apellidos = input("Apellidos: ").strip()
+            posicion = input("Posicion").strip()
+            jugador = self.gestion.crear_jugador(nombre, apellidos, posicion)
+            print(f"Personaje creado: {jugador}")
 
+    def _crear_tecnico(self):
+            nombre = input("Nombre: ").strip()
+            apellidos = input("Apellidos: ").strip()
+            rol = input("rol").strip()
+            tecnico = self.gestion.crear_jugador(nombre, apellidos, rol)
+            print(f"Personaje creado: {tecnico}")
 
     def menu_futbol(self):
+        jugador = {}
+        tecnico = {}
         while True:
             print("=================================\n"
                   "       PLANTILLAS DE FÚTBOL\n"
@@ -114,9 +130,37 @@ class Menu:
             try:
                 opcion = int(input("Elige una opción:"))
                 if opcion == 1:
-                    self._crear("heroe")
+                    tipo_miembro = int(input("Elige una opcion\n1º Añadir Jugador\n2º Añadir Cuerpo Tecnico"))
+                    match tipo_miembro:
+                        case 1:
+                            m = Jugador(
+                            input("Nombre: "),
+                            input("Apellidos: "),
+                            input("Posicion"))
+                            jugador[m.get_id()] = m
+                            logger.info(
+                                f"Se ha creado un jugador con id: {m.get_id()}, [nombre] {m.get_nombre()}, [apellido] {m.get_apellido()}"
+                                "posicion {}"
+                            )
+                            escribir(f"INSERT INTO jugador (id, nombre, apellidos, posicion) VALUES "
+                                     f"({m.get_id()}, '{m.get_nombre()}', '{m.get_apellido()}', '{m.get_pos()}');")
+                        case 2:
+                            m = CuerpoTecnico(
+                            input("Nombre: "),
+                            input("Apellidos: "),
+                            input("rol"))
+                            tecnico[m.get_id()] = m
+                            logger.info(
+                                f"Se ha creado un jugador con id: {m.get_id()}, [nombre] {m.get_nombre()}, [apellido] {m.get_apellido()}"
+                                "posicion {}"
+                            )
+                            escribir(f"INSERT INTO jugador (id, nombre, apellidos, posicion) VALUES "
+                                     f"({m.get_id()}, '{m.get_nombre()}', '{m.get_apellido()}', '{m.get_pos()}');")
+                        case _:
+                            print("Introduce un número válido")
+                            logger.warning("Opción de menú no válida: %s", opcion)
                 elif opcion == 2:
-                    self._crear("villano")
+                    pass
                 elif opcion == 3:
                     pass
                 elif opcion == 4:
@@ -134,3 +178,14 @@ class Menu:
             except Exception:
                 logger.exception("Error no controlado en el menú.")
                 print("Se ha producido un error. Consulta el archivo aplicacion.log.")
+
+
+def escribir(self, mensaje):
+    fecha = datetime.now().strftime("%Y%m%d")
+    self.ruta = f"sql/{fecha}-miembros.sql"
+
+    if not os.path.exists("sql"):
+        os.mkdir("sql")
+
+    with open(self.ruta, "a") as fichero:
+        fichero.write(f"{mensaje}\n")
