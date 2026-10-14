@@ -160,7 +160,19 @@ class Menu:
                             print("Introduce un número válido")
                             logger.warning("Opción de menú no válida: %s", opcion)
                 elif opcion == 2:
-                    pass
+                    try:
+                        tipo = input("Listar todos o listar jugador/tecnico")
+                        if tipo is None or tipo.strip().lower() in ("todos", "todo"):
+                            personajes = list(jugador.values()) + list(tecnico.values())
+                        elif tipo == "jugador":
+                            personajes = list(jugador.values())
+                        elif tipo == "tecnico":
+                            personajes = list(tecnico.values())
+                        logger.info("Listado solicitado. Tipo=%s, cantidad=%s", tipo, len(personajes))
+                        return personajes
+                    except Exception:
+                        logger.exception("Error al listar personajes.")
+                        raise
                 elif opcion == 3:
                     pass
                 elif opcion == 4:
