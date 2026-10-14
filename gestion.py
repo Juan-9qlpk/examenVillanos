@@ -3,9 +3,10 @@
 from datetime import date
 import logging
 import random
+import os
+from datetime import datetime
 from typing import Dict, Optional, Type
-
-from models import Heroe, Personaje, Villano
+from models import Heroe, Personaje, Villano, Miembro, Jugador, CuerpoTecnico
 
 logger = logging.getLogger(__name__)
 
@@ -18,12 +19,26 @@ class Gestion:
         self.villanos: Dict[int, Villano] = {}
         self._siguiente_id = 1
 
+    def __init__miembros(self):
+        self.jugador: Dict[int, Jugador] = {}
+        self.cuerpo_tecnico: Dict[int, CuerpoTecnico] = {}
+
+
     def _obtener_diccionario(self, tipo: str):
         tipo = tipo.strip().lower()
         if tipo in ("heroe", "héroe", "heroes", "héroes"):
             return self.heroes
         if tipo in ("villano", "villanos"):
             return self.villanos
+        raise ValueError("Tipo no válido. Escribe 'heroe' o 'villano'.")
+
+
+    def _obtener_diccionario_dos(self, tipo: str):
+        tipo = tipo.strip().lower()
+        if tipo in ("jugador"):
+            return self.jugador
+        if tipo in ("cuerpo tecnico", "cuerpo técnico"):
+            return self.cuerpo_tecnico
         raise ValueError("Tipo no válido. Escribe 'heroe' o 'villano'.")
 
     @staticmethod
@@ -57,6 +72,47 @@ class Gestion:
             raise
         except Exception:
             logger.exception("Error inesperado al crear un personaje.")
+            raise
+
+
+    def crear_jugador(self, nombre: str, apellidos: str, posicion: str):
+        """Crea un personaje y lo almacena en el diccionario correspondiente."""
+        try:
+            plantilla = self._obtener_diccionario_dos("jugador")
+            m = Jugador(nombre, apellidos, posicion)
+            logger.info(
+                f"Se ha creado un jugador con id: {m.get_id()}, [nombre] {m.get_nombre()}, [apellido] {m.get_apellido()}"
+                "posicion {}"
+            )
+            escribir(f"INSERT INTO jugador (id, nombre, apellidos, posicion) VALUES "
+                                       f"({m.get_id()}, '{m.get_nombre()}', '{m.get_apellido()}', '{m.get_pos()}');")
+            plantilla[m.get_id()] = m
+            return m
+        except (ValueError, TypeError):
+            logger.exception("No se pudo crear el jugador.")
+            raise
+        except Exception:
+            logger.exception("Error inesperado al crear un jugador.")
+            raise
+
+
+    def crear_tecnico(self, nombre: str, apellidos: str, rol: str):
+        """Crea un personaje y lo almacena en el diccionario correspondiente."""
+        try:
+            plantilla = self._obtener_diccionario_dos("cuerpo tecnico")
+            m = CuerpoTecnico(nombre, apellidos, rol)
+            logger.info(
+                f"Se ha creado un cuerpo Tecnico con id: {m.get_id()}, [nombre] {m.get_nombre()}, [apellido] {m.get_apellido()}"
+            )
+            plantilla[m.get_id()] = m
+            escribir(f"INSERT INTO miembro (id, nombre, apellidos, posicion) VALUES "
+                                       f"({m.get_id()}, '{m.get_nombre()}', '{m.get_apellido()}', '{m.get_rol()}');")
+            return m
+        except (ValueError, TypeError):
+            logger.exception("No se pudo crear el cuerpo Tecnico.")
+            raise
+        except Exception:
+            logger.exception("Error inesperado al crear un cuerpo Tecnico.")
             raise
 
     def listar_personajes(self, tipo: Optional[str] = None) -> list:
@@ -169,3 +225,15 @@ class Gestion:
         except Exception:
             logger.exception("Error al eliminar personaje.")
             raise
+
+
+def escribir(self, mensaje):
+    fecha = datetime.now().strftime("%Y%m%d")
+    self.ruta = f"sql/{fecha}-miembros.sql"
+
+    if not os.path.exists("sql"):
+        os.mkdir("sql")
+
+    with open(self.ruta, "a") as fichero:
+        fichero.write(f"{mensaje}\n")
+
