@@ -37,8 +37,8 @@ class Menu:
                 elif opcion == "6":
                     self._eliminar()
                 elif opcion == "0":
-                    logger.info("Aplicación cerrada por el usuario.")
-                    print("Hasta luego.")
+                    logger.info("Volviendo al menu principal")
+                    print("Volviendo al menu principal.")
                     break
                 else:
                     print("Opción no válida.")
@@ -98,3 +98,39 @@ class Menu:
             print("Personaje eliminado.")
         else:
             print("No existe un personaje con ese identificador.")
+
+
+
+    def menu_futbol(self):
+        while True:
+            print("=================================\n"
+                  "       PLANTILLAS DE FÚTBOL\n"
+                  "=================================\n"
+                  "1. Agregar miembro\n"
+                  "2. Listar plantilla\n"
+                  "3. Crear plantilla\n"
+                  "4. Salir\n"
+                  "=================================\n")
+            try:
+                opcion = int(input("Elige una opción:"))
+                if opcion == 1:
+                    self._crear("heroe")
+                elif opcion == 2:
+                    self._crear("villano")
+                elif opcion == 3:
+                    pass
+                elif opcion == 4:
+                    break
+                else:
+                    print("Opción no válida.")
+                    logger.warning("Opción de menú no válida: %s", opcion)
+            except (ValueError, TypeError) as exc:
+                print(f"Error: {exc}")
+                logger.warning("Entrada no válida: %s", exc)
+            except (KeyboardInterrupt, EOFError):
+                logger.info("Salida solicitada desde teclado.")
+                print("\nAplicación finalizada.")
+                break
+            except Exception:
+                logger.exception("Error no controlado en el menú.")
+                print("Se ha producido un error. Consulta el archivo aplicacion.log.")
